@@ -1,0 +1,7 @@
+name: MC-Cron
+version: 1.6
+author: The_TadeSK
+main: me.tade.mccron.bungee.BungeeCron
+commands:
+  timer:
+  mccron:
