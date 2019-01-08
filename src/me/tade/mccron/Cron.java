@@ -16,7 +16,9 @@ import me.tade.mccron.job.CronJob;
 import me.tade.mccron.job.EventJob;
 import me.tade.mccron.managers.EventManager;
 import me.tade.mccron.utils.EventType;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  *
@@ -26,6 +28,7 @@ public class Cron extends JavaPlugin {
 
     private HashMap<String, CronJob> jobs = new HashMap<>();
     private HashMap<EventType, List<EventJob>> eventJobs = new HashMap<>();
+    private List<String> startUpCommands = new ArrayList<>();
                                             
     @Override
     public void onEnable(){
@@ -46,7 +49,7 @@ public class Cron extends JavaPlugin {
         log("Loading metrics...");
         Metrics metrics = new Metrics(this);
         
-        log("Loading chstom chart for metrics...");
+        log("Loading custom charts for metrics...");
         metrics.addCustomChart(new Metrics.SingleLineChart("running_jobs") {
             @Override
             public int getValue() {
@@ -64,7 +67,25 @@ public class Cron extends JavaPlugin {
                 return size;
             }
         });
+
+        metrics.addCustomChart(new Metrics.SingleLineChart("running_startup_commands") {
+            @Override
+            public int getValue() {
+                return getStartUpCommands().size();
+            }
+        });
         log("Everything loaded!");
+
+        new BukkitRunnable(){
+            @Override
+            public void run() {
+                log("Dispatching startup commands..");
+                for(String commands : getStartUpCommands()){
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), commands);
+                }
+                log("Commands dispatched!");
+            }
+        }.runTaskLater(this, 20);
     }
     
     public void loadJobs(){
@@ -103,6 +124,15 @@ public class Cron extends JavaPlugin {
             }
         }
         log("All event jobs registered!");
+
+        List<String> cmds = getConfig().getStringList("startup.commands");
+        if(cmds != null) {
+            for (String command : cmds) {
+                startUpCommands.add(command);
+                log("Created new startup command: " + command);
+            }
+        }
+        log("All startup commands registered!");
     }
 
     @Override
@@ -146,5 +176,9 @@ public class Cron extends JavaPlugin {
 
     public HashMap<EventType, List<EventJob>> getEventJobs() {
         return eventJobs;
+    }
+
+    public List<String> getStartUpCommands() {
+        return startUpCommands;
     }
 }

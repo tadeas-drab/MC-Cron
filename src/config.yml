@@ -33,3 +33,8 @@ event-jobs:
       time: 20
       commands:
        - say {player} is no longer here! Be his memory with us
+startup:
+  commands:
+  - say Server was started!
+  - timer 60 say Server is online for 1 minute!
+  - save-all

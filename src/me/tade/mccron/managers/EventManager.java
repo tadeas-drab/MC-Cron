@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.server.ServerEvent;
 
 public class EventManager implements Listener {
 
@@ -32,13 +33,13 @@ public class EventManager implements Listener {
     }
 
     @EventHandler
-    public void onQuitEvent(PlayerQuitEvent event){
+    public void onQuitEvent(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
-        if(!cron.getEventJobs().containsKey(EventType.QUIT_EVENT))
+        if (!cron.getEventJobs().containsKey(EventType.QUIT_EVENT))
             return;
 
-        for(EventJob job : cron.getEventJobs().get(EventType.QUIT_EVENT))
+        for (EventJob job : cron.getEventJobs().get(EventType.QUIT_EVENT))
             job.performJob(player);
     }
 }

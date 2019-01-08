@@ -1,15 +1,19 @@
 package me.tade.mccron.bungee;
 
+import me.tade.mccron.Metrics;
 import me.tade.mccron.bungee.commands.BungeeCronCommand;
 import me.tade.mccron.bungee.commands.BungeeTimerCommand;
 import me.tade.mccron.bungee.job.BungeeCronJob;
 import me.tade.mccron.bungee.job.BungeeEventJob;
 import me.tade.mccron.bungee.managers.EventManager;
 import me.tade.mccron.utils.EventType;
+import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
+import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -23,6 +27,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This file was created by Tadeáš Drab on 14. 12. 2018
@@ -33,6 +38,7 @@ public class BungeeCron extends Plugin {
     private HashMap<EventType, List<BungeeEventJob>> eventJobs = new HashMap<>();
     private Configuration config;
     private File file;
+    private List<String> startUpCommands = new ArrayList<>();
 
     @Override
     public void onEnable() {
@@ -86,7 +92,25 @@ public class BungeeCron extends Plugin {
                 return size;
             }
         }));
+
+        metrics.addCustomChart(new BungeeMetrics.SingleLineChart("running_startup_commands", new Callable<Integer>() {
+            @Override
+            public Integer call() throws Exception {
+                return getStartUpCommands().size();
+            }
+        }));
         log("Everything loaded!");
+
+        BungeeCord.getInstance().getScheduler().schedule(this, new Runnable() {
+            @Override
+            public void run() {
+                log("Dispatching startup commands..");
+                for(String commands : getStartUpCommands()){
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), commands);
+                }
+                log("Commands dispatched!");
+            }
+        }, 2, TimeUnit.SECONDS);
     }
 
     public void loadJobs() {
@@ -125,6 +149,15 @@ public class BungeeCron extends Plugin {
             }
         }
         log("All event jobs registered!");
+
+        List<String> cmds = config.getStringList("startup.commands");
+        if(cmds != null) {
+            for (String command : cmds) {
+                startUpCommands.add(command);
+                log("Created new startup command: " + command);
+            }
+        }
+        log("All startup commands registered!");
     }
 
     @Override
@@ -193,5 +226,9 @@ public class BungeeCron extends Plugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public List<String> getStartUpCommands() {
+        return startUpCommands;
     }
 }
