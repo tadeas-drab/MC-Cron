@@ -137,8 +137,8 @@ public class Cron extends JavaPlugin {
 
     @Override
     public void onDisable(){
-        reloadConfig();
-        saveConfig();
+        //reloadConfig();
+        //saveConfig();
     }
     
     public void log(String info){

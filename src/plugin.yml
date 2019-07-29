@@ -1,5 +1,5 @@
 name: MC-Cron
-version: 1.7
+version: 1.8
 author: The_TadeSK
 main: me.tade.mccron.Cron
 commands:

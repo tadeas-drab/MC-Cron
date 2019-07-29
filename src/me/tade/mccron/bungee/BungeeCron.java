@@ -162,8 +162,8 @@ public class BungeeCron extends Plugin {
 
     @Override
     public void onDisable() {
-        reloadConfig();
-        saveConfig();
+        //reloadConfig();
+        //saveConfig();
     }
 
     public void log(String info) {
