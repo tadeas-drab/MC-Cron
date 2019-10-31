@@ -92,24 +92,25 @@ public class CronJob {
                 t = Integer.parseInt(args[1]) * 60;
             }else if(args[2].contains("hour")){
                 t = (Integer.parseInt(args[1]) * 60) * 60;
-            }else if(args[2].contains("day") || args[2].contains("dayS")){
+            }else if(args[2].contains("day") || args[2].contains("days")){
                 t = ((Integer.parseInt(args[1]) * 60) * 60) * 24;
             }else{
                 throw new IllegalArgumentException("Invalid Time format: '" + time + "'");
             }
-        }else if(args.length == 2){
-            if(args[0].contains("at")){
-                clockTime = args[1];
+        }else if(args.length == 2 || time.startsWith("every day at")){
+            String[] smArgs = new String(time).replace("every day at", "at").split(" ");
+            if(smArgs[0].contains("at")){
+                clockTime = smArgs[1];
                 t = 61;
                 return;
             }
-            if(args[1].contains("second")){
+            if(smArgs[1].contains("second")){
                 t = 1;
-            }else if(args[1].contains("minute")){
+            }else if(smArgs[1].contains("minute")){
                 t = 60;
-            }else if(args[1].contains("hour")){
+            }else if(smArgs[1].contains("hour")){
                 t = 60 * 60;
-            }else if(args[1].contains("day") || args[1].contains("dayS")){
+            }else if(smArgs[1].contains("day") || smArgs[1].contains("days")){
                 t = (60 * 60) * 24;
             }else{
                 throw new IllegalArgumentException("Invalid Time format: '" + time + "'");
