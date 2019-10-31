@@ -17,6 +17,7 @@ import me.tade.mccron.job.EventJob;
 import me.tade.mccron.managers.EventManager;
 import me.tade.mccron.utils.EventType;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -29,6 +30,7 @@ public class Cron extends JavaPlugin {
     private HashMap<String, CronJob> jobs = new HashMap<>();
     private HashMap<EventType, List<EventJob>> eventJobs = new HashMap<>();
     private List<String> startUpCommands = new ArrayList<>();
+    private PluginUpdater pluginUpdater;
                                             
     @Override
     public void onEnable(){
@@ -75,6 +77,8 @@ public class Cron extends JavaPlugin {
             }
         });
         log("Everything loaded!");
+
+        pluginUpdater = new PluginUpdater(this);
 
         new BukkitRunnable(){
             @Override
@@ -133,6 +137,22 @@ public class Cron extends JavaPlugin {
             }
         }
         log("All startup commands registered!");
+    }
+
+    public void sendUpdateMessage() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    if (player.isOp() || player.hasPermission("cron.update,info")) {
+                        player.sendMessage(" ");
+                        player.sendMessage("§a§lMC-Cron §6A new update has come! Released on §a" + pluginUpdater.getUpdateInfo()[1]);
+                        player.sendMessage("§a§lMC-Cron §6New version number/your current version §a" + pluginUpdater.getUpdateInfo()[0] + "§7/§c" + getDescription().getVersion());
+                        player.sendMessage("§a§lEfiMine §6Download update here: §ahttps://www.spigotmc.org/resources/37632/");
+                    }
+                }
+            }
+        }.runTaskLater(this, 30 * 20);
     }
 
     @Override

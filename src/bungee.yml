@@ -1,5 +1,5 @@
 name: MC-Cron
-version: 1.9
+version: 1.9.1
 author: The_TadeSK
 main: me.tade.mccron.bungee.BungeeCron
 commands:
