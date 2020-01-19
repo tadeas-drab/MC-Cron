@@ -36,8 +36,7 @@ public class Cron extends JavaPlugin {
     public void onEnable(){
         log("Loading plugin...");
         log("Loading config...");
-        getConfig().options().copyDefaults(true);
-        saveConfig();
+        this.saveDefaultConfig();
         
         log("Loading commands...");
         getCommand("timer").setExecutor(new TimerCommand(this));
